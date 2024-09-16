@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('templates', function (Blueprint $table) {
+        Schema::create('trips', function (Blueprint $table) {
             $table->id();
+            $table->time('departure_time');
+            $table->decimal('passenger_cost', 8, 2);
+            $table->text('note')->nullable();
+            $table->date('trip_day');
+            $table->time('trip_time');
+            $table->foreignId('template_id')->constrained(); // Relation to Template table
             $table->timestamps();
         });
     }
@@ -22,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('templates');
+        Schema::dropIfExists('trips');
     }
 };

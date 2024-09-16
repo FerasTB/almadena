@@ -6,6 +6,8 @@ use App\Models\Trip;
 use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Http\Resources\TripResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 class TripController extends Controller
 {
@@ -14,7 +16,7 @@ class TripController extends Controller
      */
     public function index()
     {
-        $trips = Trip::paginate(10); // Adjust pagination as needed
+        $trips = Trip::all(); // Adjust pagination as needed
         return TripResource::collection($trips);
     }
 
@@ -23,16 +25,58 @@ class TripController extends Controller
      */
     public function store(StoreTripRequest $request)
     {
-        $trip = Trip::create($request->validated());
+        // Wrap everything in a DB transaction
+        DB::beginTransaction();
 
-        return new TripResource($trip);
+        try {
+            // Create the trip with validated data
+            $trip = Trip::create($request->only(['departure_time', 'passenger_cost', 'note', 'trip_day', 'trip_time', 'template_id']));
+
+            // Add points to the trip
+            foreach ($request->points as $point) {
+                $trip->routes()->create($point); // Create each point related to this trip
+            }
+            $trip->load('template');
+            // Fetch the seat count from the related template
+            $seatCount = $trip->template->seat_count;
+
+            // Generate seats for the trip based on seat count with 'available' status
+            for ($i = 1; $i <= $seatCount; $i++) {
+                $trip->bookings()->create([
+                    'seat_number' => $i,
+                    'status' => 'available',
+                ]);
+            }
+
+            // Commit the transaction if everything is successful
+            DB::commit();
+
+            // Return the created trip as a resource
+            return new TripResource($trip);
+        } catch (\Exception $e) {
+            // Rollback the transaction if something fails
+            DB::rollBack();
+
+            // Return the error response with the exception message
+            return response()->json([
+                'error' => 'Trip creation failed.',
+                'message' => $e->getMessage(), // Include the error message
+            ], 500);
+        }
     }
+
+    // public function show($id)
+    // {
+    //     $trip = Trip::findOrFail($id);
+    //     return new TripResource($trip);
+    // }
 
     /**
      * Display the specified trip.
      */
     public function show(Trip $trip)
     {
+
         return new TripResource($trip);
     }
 

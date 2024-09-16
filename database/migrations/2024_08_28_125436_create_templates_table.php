@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
+        Schema::create('templates', function (Blueprint $table) {
             $table->id();
+            $table->string('name'); // Name of the template
+            $table->integer('seat_count'); // Seat count defined by this template
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::dropIfExists('templates');
     }
 };

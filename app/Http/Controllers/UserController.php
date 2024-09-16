@@ -29,11 +29,11 @@ class UserController extends Controller
      */
     public function login(LoginUserRequest $request)
     {
-        $credentials = $request->only('phone_number', 'password');
+        $credentials = $request->only('phone', 'password');
 
         if (!Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'phone_number' => ['The provided credentials are incorrect.'],
+                'phone' => ['The provided credentials are incorrect.'],
             ]);
         }
 
@@ -41,9 +41,10 @@ class UserController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'token_type' => 'Bearer',
             'user' => new UserResource($user),
+            'isAdmin' => $user->is_admin,
         ]);
     }
 

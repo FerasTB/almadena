@@ -1,34 +1,19 @@
 <?php
 
 return [
+    'paths' => ['api/*'],  // Define the paths where CORS should be applied, like '/api/*'
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cross-Origin Resource Sharing (CORS) Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    |
-    */
+    'allowed_methods' => ['*'],  // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'allowed_origins' => ['*'],  // Allow any origin, you can specify specific domains if needed
 
-    'allowed_methods' => ['*'],
+    'allowed_origins_patterns' => [],  // You can use regex patterns to allow specific origins
 
-    'allowed_origins' => ['*'],
+    'allowed_headers' => ['*'],  // Allow all headers
 
-    'allowed_origins_patterns' => [],
+    'exposed_headers' => [],  // Define headers that should be exposed to the front-end
 
-    'allowed_headers' => ['*'],
+    'max_age' => 0,  // Set the max age for the preflight request
 
-    'exposed_headers' => [],
-
-    'max_age' => 0,
-
-    'supports_credentials' => false,
-
+    'supports_credentials' => true,  // If you want to support credentials (cookies, etc.), set to true
 ];

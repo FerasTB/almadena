@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
@@ -26,6 +27,17 @@ Route::prefix('users')->group(function () {
     Route::post('register', [UserController::class, 'register']);
     Route::post('login', [UserController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/trips/{trip}/seats', [BookingController::class, 'getSeats']);
+        Route::get('/trips/{trip}/seats/admin', [AdminController::class, 'getSeats']);
+        Route::post('/trips/{trip}/seats/book', [BookingController::class, 'bookSeats']);
+        Route::put('/trips/{trip}/seats/{booking}/update', [BookingController::class, 'updateSeat']);
+        Route::get('/user/bookings/pending', [BookingController::class, 'getPendingBookings']);
+        Route::apiResource('trips', TripController::class);
+        Route::post('/bookings/approve', [AdminController::class, 'approveBookings']);
+        Route::post('/bookings/reject', [AdminController::class, 'rejectBookings']);
+        Route::post('/register/admin', [AdminController::class, 'registerWithoutPassword']);
+        Route::get('/non-admin', [AdminController::class, 'getNonAdminUsers']);
+
         Route::get('profile', [UserController::class, 'profile']);
         Route::post('logout', [UserController::class, 'logout']);
         Route::put('update-password', [UserController::class, 'updatePassword']);
@@ -38,6 +50,5 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'is_admin'])->group(function
     Route::put('users/{user}', [AdminController::class, 'update']);
     Route::delete('users/{user}', [AdminController::class, 'destroy']);
     Route::put('users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin']);
-    Route::apiResource('trips', TripController::class);
     Route::apiResource('templates', TemplateController::class);
 });

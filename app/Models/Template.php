@@ -9,15 +9,15 @@ class Template extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'seats_count',
-    ];
+    protected $fillable = ['name', 'seat_count'];
 
-    /**
-     * Get the trips that use this template.
-     */
     public function trips()
     {
         return $this->hasMany(Trip::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

@@ -18,16 +18,37 @@ class Trip extends Model
         'trip_time',
     ];
 
+
+    public function routes()
+    {
+        return $this->hasMany(Route::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function template()
     {
         return $this->belongsTo(Template::class);
     }
 
-    /**
-     * Get the routes associated with the trip.
-     */
-    public function routes()
+    public function getAvailableSeatsAttribute()
     {
-        return $this->hasMany(Route::class);
+        $totalSeats = $this->template->seat_count;
+        $approvedBookings = $this->bookings()->where('status', 'approved')->count();
+
+        return $totalSeats - $approvedBookings;
+    }
+
+    public function getFirstPointAttribute()
+    {
+        return $this->routes()->first()->name ?? null;
+    }
+
+    public function getLastPointAttribute()
+    {
+        return $this->routes()->latest()->first()->name ?? null;
     }
 }

@@ -9,15 +9,8 @@ class Route extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'trip_id',
-        'location_name',
-        'expected_time_to_next',
-    ];
+    protected $fillable = ['name', 'duration', 'trip_id'];
 
-    /**
-     * Get the trip associated with the route.
-     */
     public function trip()
     {
         return $this->belongsTo(Trip::class);

@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trips', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->enum('status', ['approved', 'pending', 'canceled', 'available'])
+                ->default('available')
+                ->change();
         });
     }
 
@@ -22,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trips');
+        Schema::table('bookings', function (Blueprint $table) {
+            //
+        });
     }
 };

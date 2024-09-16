@@ -16,15 +16,14 @@ class TripResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'template_id' => $this->template_id,
             'departure_time' => $this->departure_time,
             'passenger_cost' => $this->passenger_cost,
             'note' => $this->note,
-            'trip_day' => $this->trip_day,
-            'trip_time' => $this->trip_time,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            // Add any related data you need to include
+            'date' => $this->trip_day,
+            'time' => $this->trip_time,
+            'from' => $this->first_point,
+            'to' => $this->last_point,
+            'availableSeats' => $this->available_seats,
         ];
     }
 }
