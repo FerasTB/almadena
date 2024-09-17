@@ -186,7 +186,7 @@ class AdminController extends Controller
     public function registerWithoutPassword(RegisterUserAdminRequest $request)
     {
         // Set a default password ('12345678') for the user
-        $defaultPassword = bcrypt('12345678'); // Encrypt the password
+        $defaultPassword = '12345678'; // Encrypt the password
 
         // Merge the default password with the validated request data
         $userData = array_merge($request->validated(), ['password' => $defaultPassword]);
