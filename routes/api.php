@@ -54,7 +54,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
 
     Route::post('/bookings/approve', [AdminController::class, 'approveBookings']);
     Route::post('/bookings/reject', [AdminController::class, 'rejectBookings']);
-    Route::post('/register/admin', [AdminController::class, 'registerWithoutPassword']);
+    Route::post('/user/register', [AdminController::class, 'registerWithoutPassword']);
     Route::get('/non-admin', [AdminController::class, 'getNonAdminUsers']);
     Route::get('/trips/{trip}/seats', [AdminController::class, 'getSeats']);
     Route::get('users', [AdminController::class, 'index']);
