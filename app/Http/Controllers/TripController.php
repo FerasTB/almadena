@@ -32,10 +32,14 @@ class TripController extends Controller
             // Create the trip with validated data
             $trip = Trip::create($request->only(['departure_time', 'passenger_cost', 'note', 'trip_day', 'trip_time', 'template_id']));
 
-            // Add points to the trip
+            // Add points to the trip with a sequential 'number'
+            $pointNumber = 1;
             foreach ($request->points as $point) {
+                // Add the 'number' field to each point
+                $point['number'] = $pointNumber++;
                 $trip->routes()->create($point); // Create each point related to this trip
             }
+
             $trip->load('template');
             // Fetch the seat count from the related template
             $seatCount = $trip->template->seat_count;
@@ -64,6 +68,7 @@ class TripController extends Controller
             ], 500);
         }
     }
+
 
     // public function show($id)
     // {

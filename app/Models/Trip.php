@@ -44,11 +44,11 @@ class Trip extends Model
 
     public function getFirstPointAttribute()
     {
-        return $this->routes()->first()->name ?? null;
+        return $this->routes()->orderBy('number', 'asc')->first()->name ?? null;
     }
 
     public function getLastPointAttribute()
     {
-        return $this->routes()->latest()->first()->name ?? null;
+        return $this->routes()->orderBy('number', 'desc')->first()->name ?? null;
     }
 }
