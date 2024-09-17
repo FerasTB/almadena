@@ -34,6 +34,7 @@ Route::prefix('users')->group(function () {
         Route::post('/trips/{trip}/seats/book', [BookingController::class, 'bookSeats']);
         Route::put('/trips/{trip}/seats/{booking}/update', [BookingController::class, 'updateSeat']);
         Route::get('/user/bookings/pending', [BookingController::class, 'getPendingBookings']);
+        Route::get('/bookings', [BookingController::class, 'getAllBookings']);
 
         Route::get('profile', [UserController::class, 'profile']);
         Route::post('logout', [UserController::class, 'logout']);

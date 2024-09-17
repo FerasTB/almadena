@@ -106,4 +106,33 @@ class BookingController extends Controller
 
         return BookingResource::collection($Seats);
     }
+
+    public function getAllBookings(Request $request)
+    {
+        // Retrieve all bookings from the database
+        $bookings = Booking::where('id', auth()->id())->get();
+
+        // Map the booking data to match the required interface format
+        $formattedBookings = $bookings->map(function ($booking) {
+            // Assuming 'created_at' and 'payment_code' exist in your Booking model
+            return [
+                'id' => $booking->id,
+                'tripId' => $booking->trip_id,
+                'status' => $booking->status,
+                'createdAt' => $booking->created_at->toDateTimeString(),
+                'paymentCode' => $booking->payment_code,
+                'cancelDeadline' => $this->calculateCancelDeadline($booking->created_at)
+            ];
+        });
+
+        // Return the formatted bookings as a JSON response
+        return response()->json($formattedBookings);
+    }
+
+    // Helper function to calculate the cancel deadline
+    private function calculateCancelDeadline($createdAt)
+    {
+        // Set the cancellation deadline to 3 hours after booking creation
+        return Carbon::parse($createdAt)->addHours(3)->toDateTimeString();
+    }
 }
