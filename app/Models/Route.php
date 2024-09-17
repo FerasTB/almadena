@@ -9,7 +9,12 @@ class Route extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'duration', 'trip_id'];
+    protected $fillable = [
+        'name',
+        'duration',
+        'trip_id',
+        'number',
+    ];
 
     public function trip()
     {
