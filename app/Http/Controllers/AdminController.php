@@ -77,20 +77,20 @@ class AdminController extends Controller
     {
         // Fetch the trip with its related bookings and users
         $trip->load(['bookings.user']);
-    
+
         // Initialize an empty array to store grouped bookings
         $groupedSeats = [];
-    
+
         // Iterate through each booking and group by payment code and status
         foreach ($trip->bookings as $booking) {
             // Build the user's full name
-            $userFullName = $booking->user 
-                ? $booking->user->first_name . ' ' . $booking->user->middle_name . ' ' . $booking->user->last_name . ' - ' . $booking->user->mother_name 
+            $userFullName = $booking->user
+                ? $booking->user->first_name . ' ' . $booking->user->middle_name . ' ' . $booking->user->last_name . ' - ' . $booking->user->mother_name
                 : 'غير متاح';
-    
+
             // Group by payment code and status
             $groupKey = $booking->payment_code . '-' . $booking->status;
-    
+
             $groupedSeats[$booking->id] = [
                 'bookingIds' => [$booking->id], // Initialize with the first booking ID
                 'seatNumbers' => [$booking->seat_number], // Initialize with the first seat number
@@ -99,16 +99,9 @@ class AdminController extends Controller
                 'userFullName' => $userFullName, // Add full user name here
             ];
         }
-    
+
         // Return the grouped bookings as a JSON response
         return response()->json($groupedSeats);
-    }
-    
-
-        // Convert the associative array to a numeric array to match the desired format
-        $seats = array_values($groupedSeats);
-
-        return response()->json($seats);
     }
 
 
