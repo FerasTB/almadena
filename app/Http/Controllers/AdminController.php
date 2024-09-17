@@ -75,42 +75,35 @@ class AdminController extends Controller
 
     public function getSeats(Trip $trip)
     {
-        // Fetch the trip with its related bookings
-        $trip->load('bookings');
-
+        // Fetch the trip with its related bookings and users
+        $trip->load(['bookings.user']);
+    
         // Initialize an empty array to store grouped bookings
         $groupedSeats = [];
-
+    
         // Iterate through each booking and group by payment code and status
         foreach ($trip->bookings as $booking) {
-            // Check if the booking is available (assuming 'available' is the status for open bookings)
-            // if ($booking->status === 'available') {
-            //     // Treat available bookings as individual entries with the payment code "متاح للحجز"
-            //     $groupedSeats[] = [
-            //         'bookingIds' => [$booking->id],
-            //         'seatNumbers' => [$booking->seat_number],
-            //         'paymentCode' => 'متاح للحجز',
-            //         'status' => $booking->status,
-            //     ];
-            // } else {
-            // For other bookings, group by payment code and status
+            // Build the user's full name
+            $userFullName = $booking->user 
+                ? $booking->user->first_name . ' ' . $booking->user->middle_name . ' ' . $booking->user->last_name . ' - ' . $booking->user->mother_name 
+                : 'غير متاح';
+    
+            // Group by payment code and status
             $groupKey = $booking->payment_code . '-' . $booking->status;
-
-            // If the group already exists, append the seat number and booking ID to the existing entry
-            // if (isset($groupedSeats[$groupKey])) {
-            //     $groupedSeats[$groupKey]['seatNumbers'][] = $booking->seat_number;
-            //     $groupedSeats[$groupKey]['bookingIds'][] = $booking->id;
-            // } else {
-            // Create a new entry for the group
+    
             $groupedSeats[$booking->id] = [
                 'bookingIds' => [$booking->id], // Initialize with the first booking ID
                 'seatNumbers' => [$booking->seat_number], // Initialize with the first seat number
                 'paymentCode' => $booking->payment_code,
                 'status' => $booking->status, // Grouped by status
+                'userFullName' => $userFullName, // Add full user name here
             ];
-            //     }
-            // }
         }
+    
+        // Return the grouped bookings as a JSON response
+        return response()->json($groupedSeats);
+    }
+    
 
         // Convert the associative array to a numeric array to match the desired format
         $seats = array_values($groupedSeats);
