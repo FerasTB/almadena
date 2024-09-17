@@ -110,7 +110,7 @@ class BookingController extends Controller
     public function getAllBookings(Request $request)
     {
         // Retrieve all bookings from the database
-        $bookings = Booking::where('user_id', auth()->id());
+        $bookings = Booking::where('user_id', auth()->id())->get();
 
         // Map the booking data to match the required interface format
         $formattedBookings = $bookings->map(function ($booking) {
