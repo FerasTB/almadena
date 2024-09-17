@@ -145,6 +145,7 @@ class AdminController extends Controller
     }
 
 
+
     public function rejectBookings(Request $request)
     {
         // Validate the incoming request to ensure we have an array of booking IDs

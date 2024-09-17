@@ -6,7 +6,9 @@ use App\Models\Booking;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Resources\BookingResource;
+use App\Jobs\RevertPendingSeats;
 use App\Models\Trip;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -34,7 +36,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'seat_ids' => 'required|array',
             'seat_ids.*' => 'integer',
-            'payment_code' => 'required|string'
+            'payment_code' => 'required|string',
         ]);
 
         // Fetch the trip to validate the seat count
@@ -68,8 +70,13 @@ class BookingController extends Controller
                 'user_id' => auth()->id(),
             ]);
 
+        // Schedule the job to revert the seat status after 3 hours
+        $job = new RevertPendingSeats($validated['seat_ids'], $trip->id);
+        dispatch($job)->delay(Carbon::now()->addHours(3));
+
         return response()->json(['message' => 'Booking submitted for approval.']);
     }
+
 
     // 3. Update pending booking (e.g. payment code)
     public function updateSeat(Request $request, Trip $trip, $booking)
