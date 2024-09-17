@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Booking;
 use App\Models\Trip;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -201,5 +202,24 @@ class AdminController extends Controller
             'phone' => $user->phone,
         ];
         return response()->json($data, 201);
+    }
+
+    public function getInfo()
+    {
+        // Fetch the total number of users
+        $totalUsers = User::count();
+
+        // Fetch the total number of trips
+        $totalTrips = Trip::count();
+
+        // Fetch the number of upcoming trips (trips with a future date)
+        $upcomingTrips = Trip::where('trip_day', '>=', Carbon::now()->toDateString())->count();
+
+        // Return the data as a JSON response
+        return response()->json([
+            'totalUsers' => $totalUsers,
+            'totalTrips' => $totalTrips,
+            'upcomingTrips' => $upcomingTrips,
+        ]);
     }
 }

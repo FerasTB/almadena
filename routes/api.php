@@ -57,6 +57,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('/user/register', [AdminController::class, 'registerWithoutPassword']);
     Route::get('/non-admin', [AdminController::class, 'getNonAdminUsers']);
     Route::get('/trips/{trip}/seats', [AdminController::class, 'getSeats']);
+    Route::get('/dashboard-stats', [AdminController::class, 'getInfo']);
     Route::get('users', [AdminController::class, 'index']);
     Route::get('users/{user}', [AdminController::class, 'show']);
     Route::put('users/{user}', [AdminController::class, 'update']);
