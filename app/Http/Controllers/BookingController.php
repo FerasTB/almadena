@@ -110,24 +110,32 @@ class BookingController extends Controller
     public function getAllBookings(Request $request)
     {
         // Retrieve all bookings from the database
-        $bookings = Booking::where('user_id', auth()->id())->get();
+        $bookings = Booking::all();
 
         // Map the booking data to match the required interface format
         $formattedBookings = $bookings->map(function ($booking) {
             // Assuming 'created_at' and 'payment_code' exist in your Booking model
+
+            // Calculate the cancellation deadline (3 hours from booking creation)
+            $cancelDeadline = $booking->created_at->addHours(3);
+
+            // Calculate the remaining time in minutes
+            $remainingMinutes = now()->diffInMinutes($cancelDeadline, false); // Use 'false' to get negative values if past deadline
+
             return [
                 'id' => $booking->id,
                 'tripId' => $booking->trip_id,
                 'status' => $booking->status,
                 'createdAt' => $booking->created_at->toDateTimeString(),
                 'paymentCode' => $booking->payment_code,
-                'cancelDeadline' => $this->calculateCancelDeadline($booking->created_at)
+                'cancelDeadline' => $remainingMinutes > 0 ? $remainingMinutes : '0' // Show 'Expired' if past deadline
             ];
         });
 
         // Return the formatted bookings as a JSON response
         return response()->json($formattedBookings);
     }
+
 
     // Helper function to calculate the cancel deadline
     private function calculateCancelDeadline($createdAt)
