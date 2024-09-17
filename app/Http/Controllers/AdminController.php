@@ -76,32 +76,32 @@ class AdminController extends Controller
     public function getSeats(Trip $trip)
     {
         // Fetch the trip with its related bookings and users
-        $trip->load(['bookings.user']);
+        $trip->load(['bookings', 'bookings.user']);
 
         // Initialize an empty array to store grouped bookings
         $groupedSeats = [];
 
         // Iterate through each booking and group by payment code and status
         foreach ($trip->bookings as $booking) {
-            // Build the user's full name
+            // Build the user's full name if the user is associated with the booking
             $userFullName = $booking->user
-                ? $booking->user->first_name . ' ' . $booking->user->middle_name . ' ' . $booking->user->last_name . ' - ' . $booking->user->mother_name
+                ? $booking->user->first_name . ' ' . ($booking->user->middle_name ? $booking->user->middle_name . ' ' : '') . $booking->user->last_name . ' - ' . $booking->user->mother_name
                 : 'غير متاح';
 
-            // Group by payment code and status
-            $groupKey = $booking->payment_code . '-' . $booking->status;
-
-            $groupedSeats[$booking->id] = [
+            // Use the booking ID as the group key to preserve individual booking data
+            $groupedSeats[] = [
                 'bookingIds' => [$booking->id], // Initialize with the first booking ID
-                'seatNumbers' => [$booking->seat_number], // Initialize with the first seat number
+                'seatNumbers' => [$booking->seat_number], // Initialize with the seat number
                 'paymentCode' => $booking->payment_code,
-                'status' => $booking->status, // Grouped by status
-                'userFullName' => $userFullName, // Add full user name here
+                'status' => $booking->status, // Status of the booking (pending, approved, etc.)
+                'userFullName' => $userFullName, // Add full user name
             ];
         }
 
-        // Return the grouped bookings as a JSON response
-        return response()->json($groupedSeats);
+        // Convert the associative array to a numeric array to match the desired format
+        $seats = array_values($groupedSeats);
+
+        return response()->json($seats);
     }
 
 
