@@ -15,21 +15,25 @@ class BookingController extends Controller
 {    // 1. Get available seats for a specific trip
     public function getSeats(Trip $trip)
     {
-        // Fetch the trip with its seats
+        // Fetch the trip with its seats and user info
         $trip->load('bookings');
 
+        $authUserId = auth()->id();
+
         // Get all seats associated with the trip
-        $seats = $trip->bookings->map(function ($seat) {
+        $seats = $trip->bookings->map(function ($seat) use ($authUserId) {
             return [
                 'id' => $seat->id,
                 'seat_number' => $seat->seat_number,
                 'status' => $seat->status,
                 'paymentCode' => $seat->payment_code, // Include payment code if present
+                'forMe' => $seat->user_id == $authUserId // Check if the current user booked the seat
             ];
         });
 
         return response()->json($seats);
     }
+
     // 2. Book selected seats
     public function bookSeats(Request $request, Trip $trip)
     {
@@ -81,21 +85,32 @@ class BookingController extends Controller
     // 3. Update pending booking (e.g. payment code)
     public function updateSeat(Request $request, Trip $trip, $booking)
     {
+        // Validate the incoming request
         $validated = $request->validate([
             'payment_code' => 'required|string'
         ]);
 
+        // Fetch the seat and ensure it's pending
         $seat = Booking::where('trip_id', $trip->id)
             ->where('seat_number', $booking)
             ->where('status', 'pending')
             ->firstOrFail();
 
+        // Check if the authenticated user is authorized to update this seat
+        if ($seat->user_id !== auth()->id()) {
+            return response()->json([
+                'error' => 'غير مصرح لك بتحديث هذا المقعد.'
+            ], 403); // Return a 403 Forbidden status if not authorized
+        }
+
+        // Update the payment code for the seat
         $seat->update([
             'payment_code' => $validated['payment_code']
         ]);
 
-        return response()->json(['message' => 'Payment code updated successfully.']);
+        return response()->json(['message' => 'تم تحديث رمز الدفع بنجاح.']);
     }
+
 
     // 4. Get pending bookings for the current user
     public function getPendingBookings()
