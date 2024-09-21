@@ -16,7 +16,8 @@ class TripController extends Controller
      */
     public function index()
     {
-        $trips = Trip::all(); // Adjust pagination as needed
+        // Fetch trips that are scheduled for today or in the future
+        $trips = Trip::whereDate('trip_day', '>=', now())->get(); // Adjust pagination as needed
         return TripResource::collection($trips);
     }
 

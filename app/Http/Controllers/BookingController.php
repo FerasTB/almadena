@@ -78,7 +78,7 @@ class BookingController extends Controller
         $job = new RevertPendingSeats($validated['seat_ids'], $trip->id);
         dispatch($job)->delay(Carbon::now()->addHours(3));
 
-        return response()->json(['message' => 'Booking submitted for approval.']);
+        return response()->json(['message' => 'Booking submitted for approval.'],201);
     }
 
 
