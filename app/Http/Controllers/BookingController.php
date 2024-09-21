@@ -78,7 +78,7 @@ class BookingController extends Controller
         $job = new RevertPendingSeats($validated['seat_ids'], $trip->id);
         dispatch($job)->delay(Carbon::now()->addHours(3));
 
-        return response()->json(['message' => 'Booking submitted for approval.'],201);
+        return response()->json(['message' => 'Booking submitted for approval.'], 201);
     }
 
 
@@ -125,8 +125,11 @@ class BookingController extends Controller
     public function getAllBookings(Request $request)
     {
         // Retrieve all bookings from the database
-        $bookings = Booking::where('user_id', auth()->id())->get();
-
+        $bookings = Booking::where('user_id', auth()->id())
+            ->whereHas('trip', function ($query) {
+                $query->whereDate('trip_day', '>=', now());
+            })
+            ->get();
         // Map the booking data to match the required interface format
         $formattedBookings = $bookings->map(function ($booking) {
             // Assuming 'created_at' and 'payment_code' exist in your Booking model
@@ -138,7 +141,7 @@ class BookingController extends Controller
             $remainingMinutes = now()->diffInMinutes($cancelDeadline, false); // Use 'false' to get negative values if past deadline
 
             return [
-                'id' => $booking->id,
+                'id' => $booking->seat_number,
                 'tripId' => $booking->trip_id,
                 'status' => $booking->status,
                 'createdAt' => $booking->created_at->toDateTimeString(),
