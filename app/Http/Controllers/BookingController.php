@@ -144,7 +144,7 @@ class BookingController extends Controller
                 'id' => $booking->seat_number,
                 'tripId' => $booking->trip_id,
                 'status' => $booking->status,
-                'createdAt' => $booking->created_at->toDateTimeString(),
+                'createdAt' => $booking->trip->trip_day . ' الساعة ' . \Carbon\Carbon::parse($booking->trip->trip_time)->format('H:i'),
                 'paymentCode' => $booking->payment_code,
                 'cancelDeadline' => $remainingMinutes > 0 ? $remainingMinutes : '0' // Show 'Expired' if past deadline
             ];

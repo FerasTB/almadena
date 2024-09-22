@@ -19,7 +19,7 @@ class TripResource extends JsonResource
             'departure_time' => $this->departure_time,
             'passenger_cost' => $this->passenger_cost,
             'note' => $this->note,
-            'data' => $this->trip_day . ' الساعة ' . \Carbon\Carbon::parse($this->trip_time)->format('H:i'),
+            'data' => $this->trip_day,
             'time' => $this->trip_time,
             'from' => $this->first_point,
             'to' => $this->last_point,
