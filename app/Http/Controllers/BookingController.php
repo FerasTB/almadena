@@ -141,7 +141,8 @@ class BookingController extends Controller
             $remainingMinutes = now()->diffInMinutes($cancelDeadline, false); // Use 'false' to get negative values if past deadline
 
             return [
-                'id' => $booking->seat_number,
+                'id' => $booking->id,
+                'seat_number' => $booking->seat_number,
                 'tripId' => $booking->trip_id,
                 'status' => $booking->status,
                 'createdAt' => $booking->created_at->toDateTimeString(),
